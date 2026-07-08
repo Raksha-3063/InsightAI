@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from backend.app.config import settings
 from backend.app.database.connection import connect_to_mongo, close_mongo_connection
 from backend.app.auth.routes import router as auth_router
+from backend.app.routes.project import router as project_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +32,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(project_router, prefix="/api/projects", tags=["Projects"])
 
 @app.get("/health")
 async def health_check():
