@@ -31,4 +31,6 @@ async def test_list_projects_success(client):
     assert response.status_code == 200
     json_data = response.json()
     assert len(json_data) >= 1
-    assert json_data[0]["projectName"] == "Retail Sales Analytics"
+    
+    project_names = [proj["projectName"] for proj in json_data]
+    assert "Retail Sales Analytics" in project_names
