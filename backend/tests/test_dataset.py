@@ -9,9 +9,14 @@ async def test_upload_dataset_csv_success(client):
     token = login_resp.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    # Get project ID
-    proj_resp = await client.get("/api/projects", headers=headers)
-    project_id = proj_resp.json()[0]["_id"]
+    # Create project first
+    project_data = {
+        "projectName": "Upload Test Project",
+        "description": "Project for upload testing"
+    }
+    proj_create_resp = await client.post("/api/projects", json=project_data, headers=headers)
+    assert proj_create_resp.status_code == 201
+    project_id = proj_create_resp.json()["_id"]
 
     # Mock file contents
     csv_data = b"id,name,salary,hire_date\n1,Alice,50000,2026-01-01\n2,Bob,60000,2026-02-01\n3,Charlie,70000,\n1,Alice,50000,2026-01-01\n"
