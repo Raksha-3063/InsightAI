@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from backend.app.config import settings
+from backend.app.database.connection import connect_to_mongo, close_mongo_connection
 from backend.app.auth.routes import router as auth_router
 from backend.app.routes.project import router as project_router
 from backend.app.routes.dataset import router as dataset_router
