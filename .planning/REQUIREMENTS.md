@@ -9,23 +9,23 @@ Requirements for the initial release of InsightAI. Each maps to roadmap phases.
 
 ### Authentication & Profiles
 
-- [ ] **AUTH-01**: User can register an account with name, email, and password.
-- [ ] **AUTH-02**: User can log in and receive a secure JWT token.
-- [ ] **AUTH-03**: User session persists across refreshes using localStorage/secure cookies.
-- [ ] **AUTH-04**: User can view and update their profile.
+- [x] **AUTH-01**: User can register an account with name, email, and password.
+- [x] **AUTH-02**: User can log in and receive a secure JWT token.
+- [x] **AUTH-03**: User session persists across refreshes using localStorage/secure cookies.
+- [x] **AUTH-04**: User can view and update their profile.
 
 ### Project Management
 
-- [ ] **PROJ-01**: User can create a new project with a name and description.
-- [ ] **PROJ-02**: User can view a dashboard listing all their projects.
-- [ ] **PROJ-03**: User can view project-specific metrics, recent uploads, models, and reports.
+- [x] **PROJ-01**: User can create a new project with a name and description.
+- [x] **PROJ-02**: User can view a dashboard listing all their projects.
+- [x] **PROJ-03**: User can view project-specific metrics, recent uploads, models, and reports.
 
 ### Dataset Ingestion & Storage
 
-- [ ] **DATA-01**: User can upload datasets in CSV and Excel (.xlsx) formats.
-- [ ] **DATA-02**: System validates the uploaded file (size, format, headers) and reads structure.
-- [ ] **DATA-03**: System stores dataset metadata (rows, columns, missing values, duplicate count, column types) in MongoDB.
-- [ ] **DATA-04**: Original files are saved to local filesystem storage (development setup).
+- [x] **DATA-01**: User can upload datasets in CSV and Excel (.xlsx) formats.
+- [x] **DATA-02**: System validates the uploaded file (size, format, headers) and reads structure.
+- [x] **DATA-03**: System stores dataset metadata (rows, columns, missing values, duplicate count, column types) in MongoDB.
+- [x] **DATA-04**: Original files are saved to local filesystem storage (development setup).
 
 ### Data Cleaning Module
 
@@ -87,12 +87,14 @@ Requirements for the initial release of InsightAI. Each maps to roadmap phases.
 Deferred to future release. Tracked but not in current roadmap.
 
 ### Enterprise Features
+
 - **AUTH-05**: Google OAuth and Email verification on signup.
 - **DATA-05**: Connect directly to SQL databases or Google Sheets.
 - **REPT-03**: Scheduled reports sent automatically to email.
 - **COLL-01**: Shared workspaces and team collaboration.
 
 ### Advanced ML/AI
+
 - **MACH-06**: Deep learning forecasting using LSTM or Transformer-based models.
 - **EXAI-03**: Integrate formal SHAP and LIME libraries for local and global model explainability.
 - **CHAT-03**: RAG (Retrieval-Augmented Generation) on multi-document uploads using vector databases.
@@ -118,17 +120,17 @@ Which roadmap phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01     | Phase 1 | Pending |
-| AUTH-02     | Phase 1 | Pending |
-| AUTH-03     | Phase 1 | Pending |
-| AUTH-04     | Phase 1 | Pending |
-| PROJ-01     | Phase 1 | Pending |
-| PROJ-02     | Phase 1 | Pending |
-| PROJ-03     | Phase 1 | Pending |
-| DATA-01     | Phase 1 | Pending |
-| DATA-02     | Phase 1 | Pending |
-| DATA-03     | Phase 1 | Pending |
-| DATA-04     | Phase 1 | Pending |
+| AUTH-01     | Phase 1 | Complete |
+| AUTH-02     | Phase 1 | Complete |
+| AUTH-03     | Phase 1 | Complete |
+| AUTH-04     | Phase 1 | Complete |
+| PROJ-01     | Phase 1 | Complete |
+| PROJ-02     | Phase 1 | Complete |
+| PROJ-03     | Phase 1 | Complete |
+| DATA-01     | Phase 1 | Complete |
+| DATA-02     | Phase 1 | Complete |
+| DATA-03     | Phase 1 | Complete |
+| DATA-04     | Phase 1 | Complete |
 | CLNT-01     | Phase 2 | Pending |
 | CLNT-02     | Phase 2 | Pending |
 | CLNT-03     | Phase 2 | Pending |
@@ -157,6 +159,7 @@ Which roadmap phases cover which requirements.
 | NTFY-01     | Phase 4 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 37 total
 - Mapped to phases: 37
 - Unmapped: 0 ✓

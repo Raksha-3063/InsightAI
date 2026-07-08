@@ -6,7 +6,7 @@ InsightAI is built phase-by-phase using a Vertical MVP approach. Each phase deli
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Dataset Ingestion** - JWT authentication, MongoDB schema, project separation, and CSV/Excel file uploads.
+- [x] **Phase 1: Foundation & Dataset Ingestion** - JWT authentication, MongoDB schema, project separation, and CSV/Excel file uploads. (completed 2026-07-08)
 - [ ] **Phase 2: Data Cleaning & Exploratory Data Analysis (EDA)** - Automated cleaning operations, statistical profiles, and interactive chart visualizations.
 - [ ] **Phase 3: Machine Learning Engine & Forecasting** - Core Regression, Classification, Clustering, and time-series forecasting.
 - [ ] **Phase 4: AI Chat, Explainable AI & Report Generation** - Gemini API chat assistant, explainable AI model summaries, and PDF report downloads.
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Dataset Ingestion | 0/3 | Not started | - |
+| 1. Foundation & Dataset Ingestion | 0/3 | Complete    | 2026-07-08 |
 | 2. Data Cleaning & EDA | 0/3 | Not started | - |
 | 3. ML Engine & Forecasting | 0/4 | Not started | - |
 | 4. AI Chat, XAI & Reports | 0/3 | Not started | - |
