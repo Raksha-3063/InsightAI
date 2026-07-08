@@ -7,7 +7,7 @@ import api from "@/services/api";
 import { 
   FolderPlus, Folder, LogOut, User, Plus, UploadCloud, 
   FileSpreadsheet, FileText, CheckCircle, Database, AlertCircle, 
-  TrendingUp, TableProperties, Binary, Calendar, Eye
+  TrendingUp, TableProperties, Binary, Calendar, Eye, Loader2
 } from "lucide-react";
 
 interface Project {
