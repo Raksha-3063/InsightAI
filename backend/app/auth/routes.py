@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 from backend.app.database.connection import db_helper
-from backend.app.schemas.user import UserCreate, UserResponse, UserLogin, Token
-from backend.app.auth.service import verify_password, get_password_hash, create_access_token, decode_access_token
+from backend.app.schemas.user import UserCreate, UserResponse, UserLogin, Token, RefreshRequest
+from backend.app.auth.service import verify_password, get_password_hash, create_access_token, decode_access_token, create_refresh_token, decode_refresh_token
 from backend.app.models.user import User
 
 router = APIRouter()
@@ -49,7 +49,7 @@ async def register(user_data: UserCreate):
         "name": user_data.name,
         "email": user_data.email,
         "hashed_password": hashed,
-        "createdAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc)
     }
     
     # Insert in DB
@@ -69,7 +69,8 @@ async def login(credentials: UserLogin):
         )
     
     access_token = create_access_token(data={"sub": user_dict["email"]})
-    return Token(access_token=access_token, token_type="bearer")
+    refresh_token = create_refresh_token(data={"sub": user_dict["email"]})
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 # Form-based login for Swagger UI compat
 @router.post("/login-json", response_model=Token, include_in_schema=False)
@@ -83,7 +84,34 @@ async def login_json(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     
     access_token = create_access_token(data={"sub": user_dict["email"]})
-    return Token(access_token=access_token, token_type="bearer")
+    refresh_token = create_refresh_token(data={"sub": user_dict["email"]})
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+
+@router.post("/refresh", response_model=Token)
+async def refresh(request: RefreshRequest):
+    payload = decode_refresh_token(request.refresh_token)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token"
+        )
+    email = payload.get("sub")
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token subject"
+        )
+        
+    user_dict = await db_helper.db.users.find_one({"email": email})
+    if user_dict is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+        
+    new_access_token = create_access_token(data={"sub": email})
+    new_refresh_token = create_refresh_token(data={"sub": email})
+    return Token(access_token=new_access_token, refresh_token=new_refresh_token, token_type="bearer")
 
 @router.get("/profile", response_model=UserResponse)
 async def get_profile(current_user: User = Depends(get_current_user)):

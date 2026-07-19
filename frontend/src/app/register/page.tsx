@@ -19,10 +19,13 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.detail || "Registration failed. Try a different email."
-      );
+    } catch (err: unknown) {
+      let message = "Registration failed. Try a different email.";
+      const response = (err as { response?: { data?: { detail?: string } } }).response;
+      if (response && response.data && response.data.detail) {
+        message = response.data.detail;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

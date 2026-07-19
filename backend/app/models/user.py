@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, Annotated
 from pydantic import BeforeValidator
@@ -10,7 +10,7 @@ class User(BaseModel):
     name: str
     email: EmailStr
     hashed_password: str
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     model_config = {
         "populate_by_name": True,

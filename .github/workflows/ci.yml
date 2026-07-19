@@ -1,0 +1,79 @@
+name: InsightAI CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Start MongoDB Memory Server (Mock or Local)
+        run: |
+          docker run -d --name mongodb -p 27017:27017 mongo:6.0
+
+      - name: Run Backend Tests
+        env:
+          TESTING: "true"
+          MONGODB_URL: "mongodb://localhost:27017"
+          DATABASE_NAME: "insightai_test"
+          PYTHONPATH: "."
+        run: |
+          pytest backend/tests
+
+  frontend-lint-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Frontend Lint
+        run: |
+          cd frontend
+          npm run lint --if-present
+
+      - name: Run Frontend Build
+        env:
+          NEXT_PUBLIC_API_URL: "http://localhost:8000/api"
+        run: |
+          cd frontend
+          npm run build
+
+  validate-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Configurations
+        run: |
+          docker compose -f docker-compose.yml config > /dev/null
+          docker compose -f docker-compose.prod.yml config > /dev/null

@@ -18,10 +18,13 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.detail || "Invalid credentials. Please try again."
-      );
+    } catch (err: unknown) {
+      let message = "Invalid credentials. Please try again.";
+      const response = (err as { response?: { data?: { detail?: string } } }).response;
+      if (response && response.data && response.data.detail) {
+        message = response.data.detail;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 from backend.app.database.connection import db_helper
 from backend.app.schemas.project import ProjectCreate, ProjectResponse
@@ -15,7 +15,7 @@ async def create_project(project_data: ProjectCreate, current_user: User = Depen
         "projectName": project_data.projectName,
         "description": project_data.description,
         "userId": current_user.id,
-        "createdAt": datetime.utcnow()
+        "createdAt": datetime.now(timezone.utc)
     }
     
     result = await db_helper.db.projects.insert_one(new_project_dict)

@@ -34,7 +34,7 @@ def parse_file_metadata(file_path: str, file_extension: str) -> Dict[str, Any]:
             col_lower = str(col).lower()
             if 'date' in col_lower or 'time' in col_lower or 'timestamp' in col_lower:
                 try:
-                    df[col] = pd.to_datetime(df[col], errors='ignore')
+                    df[col] = pd.to_datetime(df[col])
                 except Exception:
                     pass
 

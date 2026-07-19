@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Annotated
 from pydantic import BeforeValidator
@@ -19,7 +19,9 @@ class Dataset(BaseModel):
     numericalColumns: List[str]
     categoricalColumns: List[str]
     dateColumns: List[str]
-    uploadDate: datetime = Field(default_factory=datetime.utcnow)
+    uploadDate: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    rawFilePath: Optional[str] = None
+    cleaningHistory: List[Dict] = Field(default_factory=list)
 
     model_config = {
         "populate_by_name": True,

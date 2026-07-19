@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: insightai-redis-prod
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - insightai-network-prod
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: insightai-backend-prod
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ENABLED=true
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - AI_PROVIDER=gemini
+    depends_on:
+      - redis
+    networks:
+      - insightai-network-prod
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: insightai-celery-prod
+    command: celery -A app.tasks.worker.celery_app worker --loglevel=info --concurrency=4
+    restart: always
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ENABLED=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - AI_PROVIDER=gemini
+    depends_on:
+      - redis
+    networks:
+      - insightai-network-prod
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    container_name: insightai-frontend-prod
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    depends_on:
+      - backend
+    networks:
+      - insightai-network-prod
+
+networks:
+  insightai-network-prod:
+    driver: bridge

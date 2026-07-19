@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: insightai-mongodb-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - insightai-network-dev
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: insightai-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - insightai-network-dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: insightai-backend-dev
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - DATABASE_NAME=insightai
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ENABLED=true
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - insightai-network-dev
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: insightai-celery-dev
+    command: celery -A app.tasks.worker.celery_app worker --loglevel=info
+    volumes:
+      - ./backend:/app
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - DATABASE_NAME=insightai
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_ENABLED=true
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - insightai-network-dev
+
+  frontend:
+    image: node:20-alpine
+    container_name: insightai-frontend-dev
+    working_dir: /app
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    networks:
+      - insightai-network-dev
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: insightai-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - backend
+    networks:
+      - insightai-network-dev
+
+networks:
+  insightai-network-dev:
+    driver: bridge
+
+volumes:
+  mongodb_data_dev:

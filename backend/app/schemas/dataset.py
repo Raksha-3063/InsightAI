@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class DatasetResponse(BaseModel):
     id: str = Field(..., alias="_id")
@@ -17,6 +17,8 @@ class DatasetResponse(BaseModel):
     categoricalColumns: List[str]
     dateColumns: List[str]
     uploadDate: datetime
+    rawFilePath: Optional[str] = None
+    cleaningHistory: List[dict] = Field(default_factory=list)
 
     model_config = {
         "populate_by_name": True,

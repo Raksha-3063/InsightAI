@@ -1,16 +1,18 @@
+import os
 import asyncio
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
+
+os.environ["TESTING"] = "true"
+
 from backend.app.main import app
 from backend.app.config import settings
 from backend.app.database.connection import db_helper, connect_to_mongo, close_mongo_connection
 
 @pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+def event_loop_policy():
+    return asyncio.get_event_loop_policy()
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def test_db_setup():
@@ -26,5 +28,5 @@ async def test_db_setup():
 
 @pytest_asyncio.fixture
 async def client():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
