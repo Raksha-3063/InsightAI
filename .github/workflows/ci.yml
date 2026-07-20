@@ -33,9 +33,10 @@ jobs:
           TESTING: "true"
           MONGODB_URL: "mongodb://localhost:27017"
           DATABASE_NAME: "insightai_test"
-          PYTHONPATH: "."
+          PYTHONPATH: "backend"
         run: |
-          pytest backend/tests
+          cd backend
+          pytest tests
 
   frontend-lint-build:
     runs-on: ubuntu-latest
