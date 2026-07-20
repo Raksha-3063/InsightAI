@@ -18,25 +18,34 @@ jobs:
         with:
           python-version: '3.12'
           cache: 'pip'
+          cache-dependency-path: 'backend/requirements.txt'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Start MongoDB Memory Server (Mock or Local)
+      - name: Start MongoDB Service
         run: |
           docker run -d --name mongodb -p 27017:27017 mongo:6.0
+          for i in {1..30}; do
+            if nc -z localhost 27017 2>/dev/null; then
+              echo "MongoDB is up!"
+              break
+            fi
+            echo "Waiting for MongoDB..."
+            sleep 1
+          done
 
       - name: Run Backend Tests
         env:
           TESTING: "true"
           MONGODB_URL: "mongodb://localhost:27017"
           DATABASE_NAME: "insightai_test"
-          PYTHONPATH: "backend"
+          PYTHONPATH: "."
         run: |
           cd backend
-          pytest tests
+          python -m pytest tests
 
   frontend-lint-build:
     runs-on: ubuntu-latest
