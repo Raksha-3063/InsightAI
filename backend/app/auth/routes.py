@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timezone
 from bson import ObjectId
-from backend.app.database.connection import db_helper
-from backend.app.schemas.user import UserCreate, UserResponse, UserLogin, Token, RefreshRequest
-from backend.app.auth.service import verify_password, get_password_hash, create_access_token, decode_access_token, create_refresh_token, decode_refresh_token
-from backend.app.models.user import User
+from app.database.connection import db_helper
+from app.schemas.user import UserCreate, UserResponse, UserLogin, Token, RefreshRequest
+from app.auth.service import verify_password, get_password_hash, create_access_token, decode_access_token, create_refresh_token, decode_refresh_token
+from app.models.user import User
 
 router = APIRouter()
 

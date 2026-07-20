@@ -6,23 +6,23 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from typing import Dict, Any, List, Optional
 
-from backend.app.config import settings
-from backend.app.database.connection import db_helper, connect_to_mongo
-from backend.app.tasks.worker import celery_app
-from backend.app.ml.tracking import log_experiment_run
+from app.config import settings
+from app.database.connection import db_helper, connect_to_mongo
+from app.tasks.worker import celery_app
+from app.ml.tracking import log_experiment_run
 
 # ML Training functions
-from backend.app.ml.training.regression import train_regression_model
-from backend.app.ml.training.classification import train_classification_model
-from backend.app.ml.training.clustering import train_clustering_model
-from backend.app.ml.persistence.service import save_model_pipeline, load_model_pipeline
+from app.ml.training.regression import train_regression_model
+from app.ml.training.classification import train_classification_model
+from app.ml.training.clustering import train_clustering_model
+from app.ml.persistence.service import save_model_pipeline, load_model_pipeline
 
 # Forecasting & Explainability functions
-from backend.app.ml.forecasting.engine import train_forecasting_model
-from backend.app.ml.explainability.service import get_shap_explanations, get_lime_explanation
-from backend.app.ml.prediction.service import predict_batch
-from backend.app.ai.context.builder import build_workspace_context
-from backend.app.ai.reports.generator import generate_report_markdown, convert_md_to_html
+from app.ml.forecasting.engine import train_forecasting_model
+from app.ml.explainability.service import get_shap_explanations, get_lime_explanation
+from app.ml.prediction.service import predict_batch
+from app.ai.context.builder import build_workspace_context
+from app.ai.reports.generator import generate_report_markdown, convert_md_to_html
 
 logger = logging.getLogger("celery_jobs")
 
@@ -44,7 +44,7 @@ async def init_db_connection():
     if db_helper.db is None:
         await connect_to_mongo()
 
-@celery_app.task(name="backend.app.tasks.jobs.train_ml_model_task")
+@celery_app.task(name="app.tasks.jobs.train_ml_model_task")
 def train_ml_model_task(
     model_id: str,
     project_id: str,
@@ -152,7 +152,7 @@ def train_ml_model_task(
             }}
         ))
 
-@celery_app.task(name="backend.app.tasks.jobs.train_forecast_task")
+@celery_app.task(name="app.tasks.jobs.train_forecast_task")
 def train_forecast_task(
     forecast_id: str,
     project_id: str,
@@ -226,7 +226,7 @@ def train_forecast_task(
             }}
         ))
 
-@celery_app.task(name="backend.app.tasks.jobs.explainability_task")
+@celery_app.task(name="app.tasks.jobs.explainability_task")
 def explainability_task(
     job_id: str,
     project_id: str,
@@ -290,7 +290,7 @@ def explainability_task(
             }}
         ))
 
-@celery_app.task(name="backend.app.tasks.jobs.ai_report_task")
+@celery_app.task(name="app.tasks.jobs.ai_report_task")
 def ai_report_task(
     job_id: str,
     project_id: str,
@@ -343,7 +343,7 @@ def ai_report_task(
             }}
         ))
 
-@celery_app.task(name="backend.app.tasks.jobs.batch_prediction_task")
+@celery_app.task(name="app.tasks.jobs.batch_prediction_task")
 def batch_prediction_task(
     job_id: str,
     project_id: str,

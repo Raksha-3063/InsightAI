@@ -1,8 +1,8 @@
 import pytest
 from httpx import AsyncClient
-from backend.app.database.connection import db_helper
-from backend.app.ai.context.builder import build_workspace_context
-from backend.app.ai.prompts.templates import format_dataset_summary_prompt
+from app.database.connection import db_helper
+from app.ai.context.builder import build_workspace_context
+from app.ai.prompts.templates import format_dataset_summary_prompt
 
 @pytest.fixture
 def anyio_backend():

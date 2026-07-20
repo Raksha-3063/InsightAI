@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from backend.app.config import settings
+from app.config import settings
 
 # Initialize Celery app
 celery_app = Celery(
@@ -21,4 +21,4 @@ celery_app.conf.update(
 )
 
 # Autodiscover tasks from app.tasks.jobs
-celery_app.autodiscover_tasks(["backend.app.tasks"])
+celery_app.autodiscover_tasks(["app.tasks"])

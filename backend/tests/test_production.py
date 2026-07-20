@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from backend.app.database.connection import db_helper
+from app.database.connection import db_helper
 
 @pytest.fixture
 def anyio_backend():

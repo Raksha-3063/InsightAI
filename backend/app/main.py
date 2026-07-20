@@ -3,20 +3,20 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from backend.app.config import settings
-from backend.app.database.connection import db_helper, connect_to_mongo, close_mongo_connection
-from backend.app.auth.routes import router as auth_router
-from backend.app.routes.project import router as project_router
-from backend.app.routes.dataset import router as dataset_router
-from backend.app.routes.model import router as model_router
-from backend.app.routes.forecast import router as forecast_router
-from backend.app.routes.copilot import router as copilot_router
-from backend.app.routes.job import router as job_router
+from app.config import settings
+from app.database.connection import db_helper, connect_to_mongo, close_mongo_connection
+from app.auth.routes import router as auth_router
+from app.routes.project import router as project_router
+from app.routes.dataset import router as dataset_router
+from app.routes.model import router as model_router
+from app.routes.forecast import router as forecast_router
+from app.routes.copilot import router as copilot_router
+from app.routes.job import router as job_router
 
 # Monitoring & Security Middleware
-from backend.app.monitoring.logging import setup_structured_logging
-from backend.app.monitoring.metrics import expose_prometheus_metrics, REQUEST_COUNT, REQUEST_LATENCY
-from backend.app.middleware.rate_limit import RateLimitMiddleware
+from app.monitoring.logging import setup_structured_logging
+from app.monitoring.metrics import expose_prometheus_metrics, REQUEST_COUNT, REQUEST_LATENCY
+from app.middleware.rate_limit import RateLimitMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

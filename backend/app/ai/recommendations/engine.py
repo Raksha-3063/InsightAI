@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
-from backend.app.ai.providers.gemini import call_gemini_api
-from backend.app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_recommendations_prompt
+from app.ai.providers.gemini import call_gemini_api
+from app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_recommendations_prompt
 
 def generate_ai_recommendations(context: Dict[str, Any]) -> List[Dict[str, Any]]:
     """

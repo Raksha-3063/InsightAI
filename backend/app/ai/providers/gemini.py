@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from typing import Dict, Any, List, Optional
-from backend.app.config import settings
+from app.config import settings
 
 # Configure logging
 logger = logging.getLogger("ai_provider")

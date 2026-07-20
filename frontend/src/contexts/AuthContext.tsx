@@ -33,8 +33,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const res = await api.get("/auth/profile");
           setUser(res.data);
-        } catch (err) {
-          console.error("Failed to load user profile on mount:", err);
+        } catch (err: any) {
+          if (err.response?.status === 401) {
+            console.warn("Stored auth token is invalid or expired. Session cleared.");
+          } else {
+            console.error("Failed to load user profile on mount:", err);
+          }
           localStorage.removeItem("token");
           setUser(null);
         }

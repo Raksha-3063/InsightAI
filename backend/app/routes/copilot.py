@@ -5,18 +5,18 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional
 
-from backend.app.database.connection import db_helper
-from backend.app.auth.routes import get_current_user
-from backend.app.models.user import User
-from backend.app.routes.dataset import load_dataset_df
+from app.database.connection import db_helper
+from app.auth.routes import get_current_user
+from app.models.user import User
+from app.routes.dataset import load_dataset_df
 
-from backend.app.ai.context.builder import build_workspace_context
-from backend.app.ai.services.copilot import ask_copilot_chat
-from backend.app.ai.reports.generator import generate_report_markdown, convert_md_to_html
-from backend.app.ai.recommendations.engine import generate_ai_recommendations
-from backend.app.ai.history.service import list_conversations, get_conversation, delete_conversation, search_conversations
-from backend.app.config import settings
-from backend.app.tasks.jobs import ai_report_task
+from app.ai.context.builder import build_workspace_context
+from app.ai.services.copilot import ask_copilot_chat
+from app.ai.reports.generator import generate_report_markdown, convert_md_to_html
+from app.ai.recommendations.engine import generate_ai_recommendations
+from app.ai.history.service import list_conversations, get_conversation, delete_conversation, search_conversations
+from app.config import settings
+from app.tasks.jobs import ai_report_task
 
 router = APIRouter()
 

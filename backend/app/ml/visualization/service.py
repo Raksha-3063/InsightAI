@@ -2,7 +2,7 @@ import math
 import pandas as pd
 import numpy as np
 from typing import Dict, Any, List
-from backend.app.ml.statistics.service import clean_float
+from app.ml.statistics.service import clean_float
 
 def generate_histogram_data(df: pd.DataFrame, col: str, bins_count: int = 10) -> List[Dict[str, Any]]:
     """

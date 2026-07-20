@@ -6,20 +6,20 @@ from bson import ObjectId
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel
-from backend.app.database.connection import db_helper
-from backend.app.schemas.dataset import DatasetResponse
-from backend.app.auth.routes import get_current_user
-from backend.app.models.user import User
-from backend.app.services.parser import parse_file_metadata
-from backend.app.config import settings
-from backend.app.ml.profiling.service import profile_dataframe
-from backend.app.ml.preprocessing.service import apply_cleaning_operation
-from backend.app.ml.statistics.service import calculate_numerical_statistics, calculate_categorical_statistics, calculate_correlations
-from backend.app.ml.visualization.service import (
+from app.database.connection import db_helper
+from app.schemas.dataset import DatasetResponse
+from app.auth.routes import get_current_user
+from app.models.user import User
+from app.services.parser import parse_file_metadata
+from app.config import settings
+from app.ml.profiling.service import profile_dataframe
+from app.ml.preprocessing.service import apply_cleaning_operation
+from app.ml.statistics.service import calculate_numerical_statistics, calculate_categorical_statistics, calculate_correlations
+from app.ml.visualization.service import (
     generate_histogram_data, generate_box_plot_data, generate_scatter_data,
     generate_pie_chart_data, generate_bar_chart_data, generate_line_chart_data
 )
-from backend.app.ml.insights.service import calculate_dataset_health, generate_dataset_insights
+from app.ml.insights.service import calculate_dataset_health, generate_dataset_insights
 
 router = APIRouter()
 

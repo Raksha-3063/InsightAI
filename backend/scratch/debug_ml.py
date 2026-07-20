@@ -1,5 +1,5 @@
 import pandas as pd
-from backend.app.ml.training.regression import train_regression_model
+from app.ml.training.regression import train_regression_model
 
 csv_content = (
     "Age,Salary,Target,Label,Group\n"

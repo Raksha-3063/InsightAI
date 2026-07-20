@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 import jwt
 import bcrypt
-from backend.app.config import settings
+from app.config import settings
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     try:

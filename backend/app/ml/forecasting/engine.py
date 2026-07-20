@@ -6,7 +6,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-from backend.app.ml.statistics.service import clean_float
+from app.ml.statistics.service import clean_float
 
 try:
     from prophet import Prophet

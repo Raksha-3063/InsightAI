@@ -1,0 +1,6 @@
+Age,Salary,Target,Label,Group
+25,50000,1,Yes,A
+30,60000,0,No,B
+35,55000,1,Yes,A
+40,65000,0,No,C
+45,70000,1,Yes,B

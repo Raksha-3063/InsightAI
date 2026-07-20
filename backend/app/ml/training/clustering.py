@@ -7,8 +7,8 @@ from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.base import BaseEstimator, ClusterMixin
 
-from backend.app.ml.pipelines.builder import build_preprocessing_pipeline
-from backend.app.ml.evaluation.metrics import evaluate_clustering, get_clustering_visuals
+from app.ml.pipelines.builder import build_preprocessing_pipeline
+from app.ml.evaluation.metrics import evaluate_clustering, get_clustering_visuals
 
 class PredictiveClusterModel(BaseEstimator, ClusterMixin):
     """

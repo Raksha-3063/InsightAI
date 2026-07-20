@@ -10,20 +10,20 @@ from bson import ObjectId
 from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 
-from backend.app.database.connection import db_helper
-from backend.app.schemas.model import TrainRequest, PredictRequest, ModelResponse
-from backend.app.auth.routes import get_current_user
-from backend.app.models.user import User
-from backend.app.routes.dataset import load_dataset_df
-from backend.app.ml.training.regression import train_regression_model
-from backend.app.ml.training.classification import train_classification_model
-from backend.app.ml.training.clustering import train_clustering_model
-from backend.app.ml.persistence.service import save_model_pipeline, load_model_pipeline, delete_model_pipeline
-from backend.app.ml.prediction.service import predict_manual, predict_batch
-from backend.app.ml.comparison.service import compare_models
+from app.database.connection import db_helper
+from app.schemas.model import TrainRequest, PredictRequest, ModelResponse
+from app.auth.routes import get_current_user
+from app.models.user import User
+from app.routes.dataset import load_dataset_df
+from app.ml.training.regression import train_regression_model
+from app.ml.training.classification import train_classification_model
+from app.ml.training.clustering import train_clustering_model
+from app.ml.persistence.service import save_model_pipeline, load_model_pipeline, delete_model_pipeline
+from app.ml.prediction.service import predict_manual, predict_batch
+from app.ml.comparison.service import compare_models
 
-from backend.app.config import settings
-from backend.app.tasks.jobs import train_ml_model_task, batch_prediction_task
+from app.config import settings
+from app.tasks.jobs import train_ml_model_task, batch_prediction_task
 
 router = APIRouter()
 

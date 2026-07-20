@@ -6,9 +6,9 @@ from httpx import AsyncClient, ASGITransport
 
 os.environ["TESTING"] = "true"
 
-from backend.app.main import app
-from backend.app.config import settings
-from backend.app.database.connection import db_helper, connect_to_mongo, close_mongo_connection
+from app.main import app
+from app.config import settings
+from app.database.connection import db_helper, connect_to_mongo, close_mongo_connection
 
 @pytest.fixture(scope="session")
 def event_loop_policy():

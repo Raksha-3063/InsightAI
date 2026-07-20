@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
 from datetime import datetime, timezone
 from bson import ObjectId
-from backend.app.database.connection import db_helper
-from backend.app.schemas.project import ProjectCreate, ProjectResponse
-from backend.app.auth.routes import get_current_user
-from backend.app.models.user import User
+from app.database.connection import db_helper
+from app.schemas.project import ProjectCreate, ProjectResponse
+from app.auth.routes import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 

@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from bson import ObjectId
 from typing import List, Dict, Any
 
-from backend.app.database.connection import db_helper
-from backend.app.auth.routes import get_current_user
-from backend.app.models.user import User
+from app.database.connection import db_helper
+from app.auth.routes import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 

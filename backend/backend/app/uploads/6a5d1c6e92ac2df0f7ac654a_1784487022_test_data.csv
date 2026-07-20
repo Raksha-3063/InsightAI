@@ -1,0 +1,6 @@
+Age,Salary,Target,City
+25,50000,1,New York
+30,60000,0,Chicago
+35,,1,New York
+30,60000,0,Chicago
+120,200000,1,Miami

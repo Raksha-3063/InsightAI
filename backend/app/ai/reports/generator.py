@@ -1,6 +1,6 @@
 from typing import Dict, Any
-from backend.app.ai.providers.gemini import call_gemini_api
-from backend.app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_report_generation_prompt
+from app.ai.providers.gemini import call_gemini_api
+from app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_report_generation_prompt
 
 def generate_report_markdown(context: Dict[str, Any]) -> str:
     """

@@ -9,8 +9,8 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 
-from backend.app.ml.pipelines.builder import build_preprocessing_pipeline
-from backend.app.ml.evaluation.metrics import evaluate_regression, get_regression_visuals
+from app.ml.pipelines.builder import build_preprocessing_pipeline
+from app.ml.evaluation.metrics import evaluate_regression, get_regression_visuals
 
 def get_feature_importances(pipeline: Pipeline, features: list) -> list:
     """

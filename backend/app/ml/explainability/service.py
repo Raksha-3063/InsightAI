@@ -4,7 +4,7 @@ import shap
 import lime
 import lime.lime_tabular
 from typing import Dict, Any, List, Optional
-from backend.app.ml.statistics.service import clean_float
+from app.ml.statistics.service import clean_float
 
 def get_shap_explanations(pipeline: Any, X_train: pd.DataFrame) -> Dict[str, Any]:
     """

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, Any, List
-from backend.app.ml.statistics.service import clean_float
+from app.ml.statistics.service import clean_float
 
 def calculate_dataset_health(df: pd.DataFrame, profiling_data: Dict[str, Any]) -> Dict[str, Any]:
     """

@@ -7,7 +7,7 @@ from sklearn.metrics import (
     confusion_matrix, roc_curve, auc, silhouette_score, davies_bouldin_score
 )
 from sklearn.decomposition import PCA
-from backend.app.ml.statistics.service import clean_float
+from app.ml.statistics.service import clean_float
 
 def evaluate_regression(y_true: Any, y_pred: Any) -> Dict[str, Any]:
     """

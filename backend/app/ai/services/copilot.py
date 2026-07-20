@@ -1,10 +1,10 @@
 from bson import ObjectId
 from typing import Dict, Any, List, Optional
 
-from backend.app.ai.context.builder import build_workspace_context
-from backend.app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_general_chat_prompt
-from backend.app.ai.providers.gemini import call_gemini_api
-from backend.app.ai.history.service import create_conversation, add_message, get_conversation
+from app.ai.context.builder import build_workspace_context
+from app.ai.prompts.templates import COPILOT_SYSTEM_INSTRUCTION, format_general_chat_prompt
+from app.ai.providers.gemini import call_gemini_api
+from app.ai.history.service import create_conversation, add_message, get_conversation
 
 async def ask_copilot_chat(
     project_id: str,

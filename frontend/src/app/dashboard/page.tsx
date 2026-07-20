@@ -450,6 +450,7 @@ export default function DashboardPage() {
 
   const fetchVisualsData = useCallback(async () => {
     if (!activeProject || !visualsColX) return;
+    if ((visualsChartType === "scatter" || visualsChartType === "line") && !visualsColY) return;
     setVisualsLoading(true);
     try {
       let url = `/projects/${activeProject._id}/datasets/visualizations?col=${encodeURIComponent(visualsColX)}&chart_type=${visualsChartType}`;
@@ -617,8 +618,10 @@ export default function DashboardPage() {
   const handleSelectModel = async (model: any) => {
     setActiveModel(model);
     setActiveModelVisuals(null);
+    const mId = model?._id || model?.id;
+    if (!mId || !activeProject?._id) return;
     try {
-      const res = await api.get(`/projects/${activeProject?._id}/models/${model.id}/visuals`);
+      const res = await api.get(`/projects/${activeProject._id}/models/${mId}/visuals`);
       setActiveModelVisuals(res.data);
     } catch (err) {
       console.error("Failed to load model visuals:", err);
@@ -681,8 +684,8 @@ export default function DashboardPage() {
     if (!activeProject) return;
     try {
       await api.delete(`/projects/${activeProject._id}/models/${modelId}`);
-      setMlModels((prev) => prev.filter(m => m.id !== modelId));
-      if (activeModel?.id === modelId) {
+      setMlModels((prev) => prev.filter(m => (m._id || m.id) !== modelId));
+      if ((activeModel?._id || activeModel?.id) === modelId) {
         setActiveModel(null);
         setActiveModelVisuals(null);
       }
@@ -692,14 +695,15 @@ export default function DashboardPage() {
   };
 
   const handlePredictManual = async () => {
-    if (!activeProject || !activeModel) return;
+    const mId = activeModel?._id || activeModel?.id;
+    if (!activeProject || !activeModel || !mId) return;
     setPredictLoading(true);
     try {
       const parsedInput = JSON.parse(predictManualInput);
       const payload = {
         data: Array.isArray(parsedInput) ? parsedInput : [parsedInput]
       };
-      const res = await api.post(`/projects/${activeProject._id}/models/${activeModel.id}/predict`, payload);
+      const res = await api.post(`/projects/${activeProject._id}/models/${mId}/predict`, payload);
       setPredictResults(res.data.predictions);
     } catch (err: any) {
       alert(err.message || "Prediction failed. Check input format.");
@@ -709,14 +713,15 @@ export default function DashboardPage() {
   };
 
   const handlePredictFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!activeProject || !activeModel || !e.target.files || !e.target.files[0]) return;
+    const mId = activeModel?._id || activeModel?.id;
+    if (!activeProject || !activeModel || !mId || !e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
     setPredictLoading(true);
     const formData = new FormData();
     formData.append("file", file);
     try {
       const res = await api.post(
-        `/projects/${activeProject._id}/models/${activeModel.id}/predict/file`,
+        `/projects/${activeProject._id}/models/${mId}/predict/file`,
         formData,
         { responseType: "blob" }
       );
@@ -1780,19 +1785,25 @@ export default function DashboardPage() {
                                   <svg className="w-full h-56 overflow-visible">
                                     {/* Render circles */}
                                     {visualsChartType === "scatter" && visualsData.map((d: any, idx: number) => {
-                                      const minX = Math.min(...visualsData.map((v: any) => v.x)) || 0;
-                                      const maxX = Math.max(...visualsData.map((v: any) => v.x)) || 1;
-                                      const minY = Math.min(...visualsData.map((v: any) => v.y)) || 0;
-                                      const maxY = Math.max(...visualsData.map((v: any) => v.y)) || 1;
+                                      const validXs = visualsData.map((v: any) => v.x).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                      const validYs = visualsData.map((v: any) => v.y).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                      
+                                      const minX = validXs.length ? Math.min(...validXs) : 0;
+                                      const maxX = validXs.length ? Math.max(...validXs) : 1;
+                                      const minY = validYs.length ? Math.min(...validYs) : 0;
+                                      const maxY = validYs.length ? Math.max(...validYs) : 1;
                                       
                                       const width = 500;
                                       const height = 200;
                                       
-                                      const scaleX = maxX - minX > 0 ? (d.x - minX) / (maxX - minX) : 0.5;
-                                      const scaleY = maxY - minY > 0 ? (d.y - minY) / (maxY - minY) : 0.5;
+                                      const scaleX = maxX - minX > 0 ? ((d.x ?? 0) - minX) / (maxX - minX) : 0.5;
+                                      const scaleY = maxY - minY > 0 ? ((d.y ?? 0) - minY) / (maxY - minY) : 0.5;
                                       
-                                      const cx = 30 + scaleX * (width - 60);
-                                      const cy = height - 20 - scaleY * (height - 40);
+                                      const rawCx = 30 + scaleX * (width - 60);
+                                      const rawCy = height - 20 - scaleY * (height - 40);
+                                      
+                                      const cx = isNaN(rawCx) || !isFinite(rawCx) ? 30 : rawCx;
+                                      const cy = isNaN(rawCy) || !isFinite(rawCy) ? height - 20 : rawCy;
                                       
                                       return (
                                         <circle 
@@ -1818,17 +1829,20 @@ export default function DashboardPage() {
                                         stroke="#818cf8"
                                         strokeWidth="2"
                                         points={visualsData.map((d: any, idx: number) => {
-                                          const minY = Math.min(...visualsData.map((v: any) => v.value)) || 0;
-                                          const maxY = Math.max(...visualsData.map((v: any) => v.value)) || 1;
+                                          const validValues = visualsData.map((v: any) => v.value).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                          const minY = validValues.length ? Math.min(...validValues) : 0;
+                                          const maxY = validValues.length ? Math.max(...validValues) : 1;
                                           
                                           const width = 500;
                                           const height = 200;
                                           
                                           const scaleX = visualsData.length > 1 ? idx / (visualsData.length - 1) : 0.5;
-                                          const scaleY = maxY - minY > 0 ? (d.value - minY) / (maxY - minY) : 0.5;
+                                          const scaleY = maxY - minY > 0 ? ((d.value ?? 0) - minY) / (maxY - minY) : 0.5;
                                           
-                                          const cx = 30 + scaleX * (width - 60);
-                                          const cy = height - 20 - scaleY * (height - 40);
+                                          const rawCx = 30 + scaleX * (width - 60);
+                                          const rawCy = height - 20 - scaleY * (height - 40);
+                                          const cx = isNaN(rawCx) || !isFinite(rawCx) ? 30 : rawCx;
+                                          const cy = isNaN(rawCy) || !isFinite(rawCy) ? height - 20 : rawCy;
                                           return `${cx},${cy}`;
                                         }).join(" ")}
                                       />
@@ -2177,25 +2191,28 @@ export default function DashboardPage() {
                               <p className="text-slate-500 text-xs">No trained models yet. Train one using the Train Wizard.</p>
                             ) : (
                               <div className="space-y-2">
-                                {mlModels.map((m) => (
-                                  <div
-                                    key={m.id}
-                                    onClick={() => handleSelectModel(m)}
-                                    className={`p-4 rounded-xl border transition-all cursor-pointer text-left ${
-                                      activeModel?.id === m.id
-                                        ? "bg-indigo-600/10 border-indigo-500/40"
-                                        : "bg-slate-950 border-slate-850 hover:border-slate-700"
-                                    }`}
-                                  >
-                                    <div className="flex justify-between items-start gap-2">
-                                      <p className="text-xs font-bold text-white truncate font-mono">{m.modelName}</p>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleDeleteModel(m.id);
-                                        }}
-                                        className="text-slate-500 hover:text-rose-400 transition-colors"
-                                      >
+                                {mlModels.map((m) => {
+                                  const mId = m._id || m.id;
+                                  const isActive = (activeModel?._id || activeModel?.id) === mId;
+                                  return (
+                                    <div
+                                      key={mId}
+                                      onClick={() => handleSelectModel(m)}
+                                      className={`p-4 rounded-xl border transition-all cursor-pointer text-left ${
+                                        isActive
+                                          ? "bg-indigo-600/10 border-indigo-500/40"
+                                          : "bg-slate-950 border-slate-850 hover:border-slate-700"
+                                      }`}
+                                    >
+                                      <div className="flex justify-between items-start gap-2">
+                                        <p className="text-xs font-bold text-white truncate font-mono">{m.modelName}</p>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteModel(mId);
+                                          }}
+                                          className="text-slate-500 hover:text-rose-400 transition-colors"
+                                        >
                                         <Trash2 className="w-3.5 h-3.5" />
                                       </button>
                                     </div>
@@ -2204,7 +2221,8 @@ export default function DashboardPage() {
                                       <span>{m.taskType}</span>
                                     </div>
                                   </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             )}
                           </div>
@@ -2275,13 +2293,16 @@ export default function DashboardPage() {
                                             <line x1="0%" y1="100%" x2="100%" y2="0%" stroke="#334155" strokeDasharray="4 4" strokeWidth="1.5" />
                                             {/* Draw scatter dots */}
                                             {activeModelVisuals.actualVsPredicted.map((pt: any, i: number) => {
-                                              const actuals = activeModelVisuals.actualVsPredicted.map((v: any) => v.actual);
-                                              const preds = activeModelVisuals.actualVsPredicted.map((v: any) => v.predicted);
-                                              const minVal = Math.min(...actuals, ...preds);
-                                              const maxVal = Math.max(...actuals, ...preds);
+                                              const actuals = activeModelVisuals.actualVsPredicted.map((v: any) => v.actual).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const preds = activeModelVisuals.actualVsPredicted.map((v: any) => v.predicted).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const minVal = actuals.length && preds.length ? Math.min(...actuals, ...preds) : 0;
+                                              const maxVal = actuals.length && preds.length ? Math.max(...actuals, ...preds) : 1;
                                               const diff = maxVal - minVal || 1.0;
-                                              const cx = ((pt.actual - minVal) / diff) * 100;
-                                              const cy = 100 - (((pt.predicted - minVal) / diff) * 100);
+                                              
+                                              const rawCx = (((pt.actual ?? 0) - minVal) / diff) * 100;
+                                              const rawCy = 100 - ((((pt.predicted ?? 0) - minVal) / diff) * 100);
+                                              const cx = isNaN(rawCx) || !isFinite(rawCx) ? 50 : Math.max(0, Math.min(100, rawCx));
+                                              const cy = isNaN(rawCy) || !isFinite(rawCy) ? 50 : Math.max(0, Math.min(100, rawCy));
                                               return (
                                                 <circle key={i} cx={`${cx}%`} cy={`${cy}%`} r="3" fill="#6366f1" opacity="0.6" />
                                               );
@@ -2301,16 +2322,19 @@ export default function DashboardPage() {
                                             <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#475569" strokeDasharray="3 3" strokeWidth="1.5" />
                                             {/* Draw residuals dots */}
                                             {activeModelVisuals.residualPlot.map((pt: any, i: number) => {
-                                              const preds = activeModelVisuals.residualPlot.map((v: any) => v.predicted);
-                                              const resids = activeModelVisuals.residualPlot.map((v: any) => v.residual);
-                                              const minPred = Math.min(...preds);
-                                              const maxPred = Math.max(...preds);
+                                              const preds = activeModelVisuals.residualPlot.map((v: any) => v.predicted).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const resids = activeModelVisuals.residualPlot.map((v: any) => v.residual).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const minPred = preds.length ? Math.min(...preds) : 0;
+                                              const maxPred = preds.length ? Math.max(...preds) : 1;
                                               const diffPred = maxPred - minPred || 1.0;
                                               
-                                              const maxAbsResid = Math.max(...resids.map(Math.abs)) || 1.0;
+                                              const absResids = resids.map(Math.abs);
+                                              const maxAbsResid = absResids.length ? Math.max(...absResids) : 1.0;
                                               
-                                              const cx = ((pt.predicted - minPred) / diffPred) * 100;
-                                              const cy = 50 - ((pt.residual / maxAbsResid) * 50);
+                                              const rawCx = (((pt.predicted ?? 0) - minPred) / diffPred) * 100;
+                                              const rawCy = 50 - (((pt.residual ?? 0) / (maxAbsResid || 1.0)) * 50);
+                                              const cx = isNaN(rawCx) || !isFinite(rawCx) ? 50 : Math.max(0, Math.min(100, rawCx));
+                                              const cy = isNaN(rawCy) || !isFinite(rawCy) ? 50 : Math.max(0, Math.min(100, rawCy));
                                               return (
                                                 <circle key={i} cx={`${cx}%`} cy={`${cy}%`} r="3" fill="#ec4899" opacity="0.6" />
                                               );
@@ -2336,15 +2360,17 @@ export default function DashboardPage() {
                                                 stroke="#6366f1"
                                                 strokeWidth="2.5"
                                                 points={activeModelVisuals.rocCurve.map((pt: any) => {
-                                                  const cx = pt.fpr * 100;
-                                                  const cy = 100 - (pt.tpr * 100);
+                                                  const rawCx = (pt.fpr ?? 0) * 100;
+                                                  const rawCy = 100 - ((pt.tpr ?? 0) * 100);
+                                                  const cx = isNaN(rawCx) || !isFinite(rawCx) ? 0 : Math.max(0, Math.min(100, rawCx));
+                                                  const cy = isNaN(rawCy) || !isFinite(rawCy) ? 100 : Math.max(0, Math.min(100, rawCy));
                                                   return `${cx}%,${cy}%`;
                                                 }).join(" ")}
                                               />
                                             )}
                                           </svg>
                                           <div className="absolute bottom-2 right-4 text-[10px] text-indigo-400 font-bold font-mono">
-                                            AUC: {activeModel.metrics.rocAuc?.toFixed(4) || "N/A"}
+                                            AUC: {activeModel.metrics?.rocAuc?.toFixed(4) || "N/A"}
                                           </div>
                                         </div>
                                       </div>
@@ -2357,18 +2383,20 @@ export default function DashboardPage() {
                                         <div className="relative border border-slate-800 bg-slate-950 h-56 rounded-xl flex items-center justify-center">
                                           <svg className="w-full h-full p-6">
                                             {activeModelVisuals.clusterScatter.map((pt: any, i: number) => {
-                                              const xs = activeModelVisuals.clusterScatter.map((v: any) => v.x);
-                                              const ys = activeModelVisuals.clusterScatter.map((v: any) => v.y);
-                                              const minX = Math.min(...xs);
-                                              const maxX = Math.max(...xs);
-                                              const minY = Math.min(...ys);
-                                              const maxY = Math.max(...ys);
+                                              const xs = activeModelVisuals.clusterScatter.map((v: any) => v.x).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const ys = activeModelVisuals.clusterScatter.map((v: any) => v.y).filter((v: any) => typeof v === "number" && !isNaN(v));
+                                              const minX = xs.length ? Math.min(...xs) : 0;
+                                              const maxX = xs.length ? Math.max(...xs) : 1;
+                                              const minY = ys.length ? Math.min(...ys) : 0;
+                                              const maxY = ys.length ? Math.max(...ys) : 1;
                                               
-                                              const cx = ((pt.x - minX) / (maxX - minX || 1)) * 100;
-                                              const cy = 100 - (((pt.y - minY) / (maxY - minY || 1)) * 100);
+                                              const rawCx = (((pt.x ?? 0) - minX) / (maxX - minX || 1)) * 100;
+                                              const rawCy = 100 - ((((pt.y ?? 0) - minY) / (maxY - minY || 1)) * 100);
+                                              const cx = isNaN(rawCx) || !isFinite(rawCx) ? 50 : Math.max(0, Math.min(100, rawCx));
+                                              const cy = isNaN(rawCy) || !isFinite(rawCy) ? 50 : Math.max(0, Math.min(100, rawCy));
                                               
                                               const colors = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#3b82f6", "#14b8a6"];
-                                              const dotColor = colors[Math.max(0, pt.cluster) % colors.length];
+                                              const dotColor = colors[Math.max(0, pt.cluster ?? 0) % colors.length];
                                               
                                               return (
                                                 <circle key={i} cx={`${cx}%`} cy={`${cy}%`} r="3.5" fill={dotColor} opacity="0.8" />

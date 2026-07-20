@@ -1,7 +1,7 @@
 import os
 import joblib
 from typing import Any
-from backend.app.config import settings
+from app.config import settings
 
 # Create models upload directory if it does not exist
 MODELS_DIR = os.path.join(settings.UPLOAD_DIR, "models")
