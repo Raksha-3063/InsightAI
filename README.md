@@ -293,20 +293,6 @@ npm run dev
 
 ---
 
-# 📷 Screenshots
-
-> Add screenshots here after deployment.
-
-- Dashboard
-- Dataset Upload
-- Data Profiling
-- Visualizations
-- Machine Learning
-- Forecasting
-- Explainable AI
-- AI Copilot
-
----
 
 # 🎯 Future Enhancements
 
